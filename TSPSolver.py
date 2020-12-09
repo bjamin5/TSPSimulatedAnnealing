@@ -16,6 +16,7 @@ import numpy as np
 from TSPClasses import *
 import heapq
 import itertools
+import copy
 
 
 
@@ -273,7 +274,70 @@ class TSPSolver:
 	'''
 		
 	def fancy(self, time_allowance=60.0):
-		pass
+		bssf = self.greedy()
+		route = bssf["soln"]
+		temp = 100
+		start_time = time.time()
+		results = {}
+
+		while time.time() - start_time < time_allowance and temp > 5:
+			pathsFound = 0
+			keepGoing = 100 * self.ncities
+			cost = route.cost
+			print(cost)
+			while pathsFound < 10 and keepGoing > 0:
+				choice = random.randint(0,1)
+				if choice == 0:
+					newSolution = self.reverse(route)
+				else:
+					newSolution = self.transport(route)
+				diff = (-(newSolution.cost - route.cost))/temp
+				p = np.exp(diff)
+				r = random.random()
+				if newSolution.cost < route.cost or r < p:
+					route = newSolution
+					pathsFound += 1
+				keepGoing -= 1
+			if route.cost == cost:
+				break
+			temp = temp * 0.9
+
+		end_time = time.time()
+
+		# Preps the return data
+		results['cost'] = route.cost
+		results['time'] = end_time - start_time
+		results['count'] = None
+		results['soln'] = route
+		results['max'] = None
+		results['total'] = None
+		results['pruned'] = None
+
+		return results
+
+
+
+
+	def reverse(self, solution):
+		newSolution = copy.deepcopy(solution)
+		first = random.randint(0, self.ncities - 2)
+		second = first + 1
+		newSolution.route[second] = solution.route[first]
+		newSolution.route[first] = solution.route[second]
+
+		return newSolution
+
+	def transport(self, solution):
+		newSolution = copy.deepcopy(solution)
+		first = random.randint(0, self.ncities - 2)
+		second = first + 1
+		insert = random.randint(0, self.ncities - 4)
+		del newSolution.route[first:second+1]
+		newSolution.route[insert:insert] = solution.route[first:second+1]
+
+		return newSolution
+
+
 
 #This is a State class that holds all the info necessary to progress the algorithm.
 class State:
