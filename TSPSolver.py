@@ -274,6 +274,7 @@ class TSPSolver:
 	'''
 		
 	def fancy(self, time_allowance=60.0):
+		time_allowance = 600.0
 		bssf = self.greedy()
 		route = bssf["soln"]
 		temp = 1000
@@ -284,8 +285,6 @@ class TSPSolver:
 			pathsFound = 0
 			keepGoing = 100 * self.ncities
 			cost = route.cost
-			print("The cost:" + str(cost))
-			print("The temp:" + str(temp))
 			while pathsFound < 10 and keepGoing > 0:
 				choice = random.randint(0,1)
 				if choice == 0:
