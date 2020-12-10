@@ -276,7 +276,7 @@ class TSPSolver:
 	def fancy(self, time_allowance=60.0):
 		bssf = self.greedy()
 		route = bssf["soln"]
-		temp = 100
+		temp = 1000
 		start_time = time.time()
 		results = {}
 
@@ -284,7 +284,8 @@ class TSPSolver:
 			pathsFound = 0
 			keepGoing = 100 * self.ncities
 			cost = route.cost
-			print(cost)
+			print("The cost:" + str(cost))
+			print("The temp:" + str(temp))
 			while pathsFound < 10 and keepGoing > 0:
 				choice = random.randint(0,1)
 				if choice == 0:
@@ -319,23 +320,23 @@ class TSPSolver:
 
 
 	def reverse(self, solution):
-		newSolution = copy.deepcopy(solution)
+		newRoute = copy.deepcopy(solution.route)
 		first = random.randint(0, self.ncities - 2)
 		second = first + 1
-		newSolution.route[second] = solution.route[first]
-		newSolution.route[first] = solution.route[second]
+		newRoute[second] = solution.route[first]
+		newRoute[first] = solution.route[second]
 
-		return newSolution
+		return TSPSolution(newRoute)
 
 	def transport(self, solution):
-		newSolution = copy.deepcopy(solution)
+		newRoute = copy.deepcopy(solution.route)
 		first = random.randint(0, self.ncities - 2)
 		second = first + 1
 		insert = random.randint(0, self.ncities - 4)
-		del newSolution.route[first:second+1]
-		newSolution.route[insert:insert] = solution.route[first:second+1]
+		del newRoute[first:second+1]
+		newRoute[insert:insert] = solution.route[first:second+1]
 
-		return newSolution
+		return TSPSolution(newRoute)
 
 
 
